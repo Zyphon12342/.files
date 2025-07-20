@@ -1,0 +1,1 @@
+("~/projects/SJS/Tauri/tauri-notes/src-tauri/" "~/projects/SJS/Tauri/tauri-notes/" "~/projects/SC/VM-in-C/" "~/projects/SFlutter/yello/")

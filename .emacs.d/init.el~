@@ -1,0 +1,147 @@
+;; =============================
+;; Minimal Terminal-like GUI & Theme
+;; =============================
+
+;; Disable startup UI elements
+(setq inhibit-startup-message t
+      initial-scratch-message nil
+      ring-bell-function 'ignore)
+
+;; Disable GUI elements for a clean, terminal-like appearance
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+(tooltip-mode -1)
+(set-fringe-mode 0)           ;; remove side padding
+(setq use-dialog-box nil)     ;; disable file dialog popups
+(setq visible-bell t)
+
+;; Line numbers
+(global-display-line-numbers-mode t)
+(setq display-line-numbers-type 'absolute)
+
+;; Fonts
+(set-face-attribute 'default nil :font "Fira Code Retina" :height 110)
+
+;; =============================
+;; Package Management
+;; =============================
+
+(require 'package)
+(setq package-archives
+      '(("melpa" . "https://melpa.org/packages/")
+        ("gnu" . "https://elpa.gnu.org/packages/")))
+
+(package-initialize)
+(unless package-archive-contents
+  (package-refresh-contents))
+
+(unless (package-installed-p 'use-package)
+  (package-install 'use-package))
+(require 'use-package)
+(setq use-package-always-ensure t)
+
+;; =============================
+;; Theme
+;; =============================
+
+(use-package doom-themes
+  :config
+  (load-theme 'doom-palenight t)
+  (doom-themes-visual-bell-config)
+  (doom-themes-org-config))
+
+;; =============================
+;; Terminal Shell Clear Shortcut
+;; =============================
+
+(defun my-comint-clear ()
+  "Clear the entire shell buffer and send clear command to shell."
+  (interactive)
+  (let ((comint-buffer-maximum-size 0))
+    (erase-buffer)
+    (comint-send-input)))
+
+(add-hook 'shell-mode-hook
+          (lambda ()
+            (local-set-key (kbd "C-c l") #'my-comint-clear)))
+
+;; =============================
+;; Git Integration
+;; =============================
+
+(use-package magit)
+(use-package diff-hl
+  :hook (prog-mode . diff-hl-mode))
+
+;; =============================
+;; Language & LSP Support
+;; =============================
+
+(use-package lsp-mode
+  :commands lsp
+  :init (setq lsp-keymap-prefix "C-c l")
+  :config (lsp-enable-which-key-integration t))
+
+(use-package lsp-ui
+  :commands lsp-ui-mode)
+
+;; Language Hooks
+(add-hook 'c-mode-common-hook #'lsp)
+(add-hook 'java-mode-hook #'lsp)
+
+(use-package rust-mode
+  :hook (rust-mode . lsp))
+
+(use-package cargo
+  :hook (rust-mode . cargo-minor-mode))
+
+(use-package python-mode
+  :hook (python-mode . lsp))
+
+(use-package js2-mode
+  :mode "\\.js\\'"
+  :hook (js2-mode . lsp))
+
+(use-package dart-mode
+  :hook (dart-mode . lsp))
+
+(use-package lsp-dart
+  :after (dart-mode lsp-mode)
+  :hook (dart-mode . lsp))
+
+;; =============================
+;; Autocompletion & Syntax
+;; =============================
+
+(use-package company
+  :hook (prog-mode . company-mode))
+
+(use-package flycheck
+  :hook (prog-mode . flycheck-mode))
+
+(electric-pair-mode 1) ;; Bracket auto-completion
+
+;; =============================
+;; Project Management
+;; =============================
+
+(use-package projectile
+  :init (projectile-mode +1)
+  :config (setq projectile-project-search-path '("~/"))
+  :bind-keymap ("C-c p" . projectile-command-map))
+
+(use-package treemacs :defer t)
+(use-package treemacs-projectile
+  :after (treemacs projectile))
+
+;; =============================
+;; Final Touches
+;; =============================
+
+(global-hl-line-mode -1) ;; Disable line highlight
+
+(custom-set-variables
+ '(package-selected-packages
+   '(treemacs-projectile projectile lsp-dart diff-hl rust-mode python-mode magit lsp-ui js2-mode flycheck doom-themes dart-mode company cargo)))
+(custom-set-faces)

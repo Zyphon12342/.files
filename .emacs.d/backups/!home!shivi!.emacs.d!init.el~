@@ -1,0 +1,118 @@
+;; ------------------------------
+;; BASIC SETUP
+;; ------------------------------
+
+(setq inhibit-startup-message t)       ;; No startup message
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+(global-display-line-numbers-mode t)   ;; Show line numbers
+(setq display-line-numbers-type 'relative)
+
+;; ------------------------------
+;; PACKAGE SETUP
+;; ------------------------------
+
+(require 'package)
+(setq package-archives
+      '(("melpa" . "https://melpa.org/packages/")
+        ("gnu"   . "https://elpa.gnu.org/packages/")))
+
+(package-initialize)
+(unless package-archive-contents
+  (package-refresh-contents))
+
+;; Use-package bootstrap
+(unless (package-installed-p 'use-package)
+  (package-install 'use-package))
+(require 'use-package)
+(setq use-package-always-ensure t)
+
+;; ------------------------------
+;; GIT
+;; ------------------------------
+(use-package magit
+  :bind ("C-x g" . magit-status))
+
+;; ------------------------------
+;; BRACKET PAIRING
+;; ------------------------------
+(electric-pair-mode 1) ;; Auto-close brackets
+(show-paren-mode 1)    ;; Highlight matching pairs
+
+;; ------------------------------
+;; SYNTAX HIGHLIGHTING + LSP
+;; ------------------------------
+(use-package lsp-mode
+  :hook ((c-mode c++-mode python-mode js-mode rust-mode
+                 dart-mode java-mode) . lsp)
+  :commands lsp
+  :init
+  (setq lsp-keymap-prefix "C-c l"))
+
+(use-package lsp-ui
+  :commands lsp-ui-mode)
+
+(use-package company
+  :hook (prog-mode . company-mode)
+  :config
+  (setq company-idle-delay 0.1
+        company-minimum-prefix-length 1))
+
+(use-package flycheck
+  :hook (prog-mode . flycheck-mode))
+
+;; ------------------------------
+;; LANGUAGE SUPPORT
+;; ------------------------------
+
+;; C/C++
+(use-package cc-mode)
+
+;; Python
+(use-package python-mode)
+
+;; Rust
+(use-package rust-mode
+  :mode "\\.rs\\'"
+  :hook (rust-mode . lsp))
+
+;; JavaScript (and TS)
+(use-package js2-mode
+  :mode "\\.js\\'"
+  :interpreter "node")
+
+;; Dart / Flutter
+(use-package dart-mode
+  :hook (dart-mode . lsp)
+  :custom (dart-format-on-save t))
+
+(use-package flutter
+  :after dart-mode
+  :custom
+  (flutter-sdk-path "/path/to/flutter/")) ;; CHANGE THIS!
+
+;; Java
+(use-package lsp-java
+  :config (add-hook 'java-mode-hook #'lsp))
+
+;; Cargo
+(use-package cargo
+  :hook (rust-mode . cargo-minor-mode))
+
+;; Makefiles
+(add-hook 'makefile-mode-hook #'display-line-numbers-mode)
+
+;; ------------------------------
+;; THEME (Optional)
+;; ------------------------------
+(use-package doom-themes
+  :config
+  (load-theme 'doom-one t))
+
+;; ------------------------------
+;; SAVE BACKUPS IN ONE PLACE
+;; ------------------------------
+(setq backup-directory-alist `(("." . "~/.emacs.d/backups")))
+(setq make-backup-files t)
+
