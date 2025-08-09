@@ -1,0 +1,35 @@
+/* === MAC-STYLE FLOATING DOCK === */
+window#waybar {
+  background: rgba(20, 20, 20, 0.6);
+  border-radius: 20px;
+
+  /* padding around the icons */
+  padding: 8px 12px;
+}
+
+/* hide when empty */
+#taskbar.empty {
+  opacity: 0;
+  padding: 0;
+}
+
+/* icon buttons */
+#taskbar button {
+  background: transparent;
+  border: none;
+  padding: 6px;
+  margin-left: 6px;
+  margin-right: 6px;
+  border-radius: 12px;
+}
+
+/* hover highlight */
+#taskbar button:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* active window highlight */
+#taskbar button.focused {
+  background: rgba(255, 255, 255, 0.25);
+}
+

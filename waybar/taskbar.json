@@ -1,0 +1,23 @@
+{
+  // Draw on the overlay layer so we float above
+  "layer": "overlay",
+
+  // Stick to the bottom
+  "position": "bottom",
+
+  // No hard height—let the icons + padding decide
+  // Inset the entire bar 100px from left/right, 15px from bottom
+  "margin": "0 100 15 100",
+
+  // Center the taskbar module in that window
+  "modules-center": ["wlr/taskbar"],
+
+  "wlr/taskbar": {
+    "format": "{icon}",
+    "tooltip-format": "{title}",
+    "on-click": "activate",
+    "on-click-middle": "close",
+    "active-first": true,
+    "icon-size": 32
+  }
+}
